@@ -38,11 +38,13 @@
             <div class="flex justify-between items-center h-16">
                 <!-- Logo -->
                 <div class="flex items-center">
-                    <img src="./public/logo_full-removebg-preview.png" alt="MoneySeen Logo" class="h-12 w-auto" />
+                    <a href="./dashboard.html">
+                        <img src="./public/logo_full-removebg-preview.png" alt="MoneySeen Logo" class="h-12 w-auto cursor-pointer" />
+                    </a>
                 </div>
                 <!-- Navigation -->
                 <nav class="hidden md:flex md:flex-row border border-[rgba(201, 197, 197, 0.68)] p-1 rounded-full items-center space-x-2">
-                    <a href="#" class="text-black hover:bg-white px-6 py-2 rounded-full text-sm font-medium">Home</a>
+                    <a href="./dashboard.html" class="text-black hover:bg-white px-6 py-2 rounded-full text-sm font-medium">Home</a>
                     <a href="#" class="text-black hover:bg-white px-6 py-2 rounded-full text-sm font-medium">Features</a>
                     <a href="#" class="bg-[#0D6B37] text-white px-12 py-2.5 rounded-full text-sm font-medium">Plan & Pricing</a>
                     <a href="#" class="text-black hover:bg-white px-6 py-2 rounded-full text-sm font-medium">Download</a>
@@ -64,7 +66,9 @@
                         </svg>
                     </button>
                     <div class="size-10 bg-gray-300 rounded-full overflow-hidden">
-                        <img src="./public/user.png" alt="User" class="w-full h-full object-cover" />
+                        <a href="./dashboard_account.html">
+                                        <img src="./public/user.png" alt="User Avatar" class="w-full h-full object-cover" />
+                                    </a>
                     </div>
                     <!-- Mobile menu button -->
                     <button class="md:hidden text-gray-600 size-10 flex items-center justify-center" onclick="toggleMobileMenu()">
