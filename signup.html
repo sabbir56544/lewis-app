@@ -198,10 +198,10 @@
         const password = passwordInput.value;
         const confirmPassword = confirmPasswordInput.value;
         
-        if (!validatePassword(password)) {
-          alert('Please ensure your password meets all requirements.');
-          return;
-        }
+        // if (!validatePassword(password)) {
+        //   alert('Please ensure your password meets all requirements.');
+        //   return;
+        // }
         
         if (password !== confirmPassword) {
           passwordMatchMessage.textContent = 'Passwords do not match.';
@@ -211,7 +211,7 @@
         }
         
         // If validation passes, you can submit the form
-        alert('Account created successfully!');
+        // alert('Account created successfully!');
       });
     </script>
   </body>
