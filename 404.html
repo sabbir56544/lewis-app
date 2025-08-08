@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<title>MoneyClean - Financial Management</title>
+	<link rel="stylesheet" href="./css/testimonials.css" />
+	<link rel="stylesheet" href="./css/base.css" />
+	<link rel="stylesheet" href="./css/font.css" />
+	<!-- Remove all custom CSS links, keep only Tailwind CDN and Font Awesome -->
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css"
+		integrity="sha512-papm6p6QwQwQwQwQwQwQwQwQwQwQwQwQwQwQwQwQwQwQwQwQwQwQwQwQwQwQwQwQwQwQwQwQwQwQwQwQwQw=="
+		crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+	<style>
+		.gradient-green {
+			background: linear-gradient(135deg, #1BB15F 0%, #0B6B37 100%);
+		}
+
+		.check-icon {
+			width: 16px;
+			height: 16px;
+			border: #666666;
+			border-radius: 100%;
+			display: inline-flex;
+			align-items: center;
+			justify-content: center;
+			margin-right: 8px;
+			flex-shrink: 0;
+		}
+
+		.check-icon::after {
+			content: '✓';
+			color: #666666;
+			font-size: 10px;
+			font-weight: bold;
+		}
+	</style>
+
+	<script src="https://cdn.tailwindcss.com"></script>
+	<script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+</head>
+
+<body class="bg-white">
+	<!-- Hero/Banner Section -->
+	<section class="relative overflow-hidden bg-[url('./public/banner.png')] bg-cover bg-center">
+		<div class="container mx-auto px-5">
+			<!-- Navbar -->
+			<nav class="flex justify-between items-center py-6 relative z-10">
+				<div>
+					<a href="./index.html" class="cursor-pointer">
+						<img src="./public/logo.svg" alt="MoneyClean Logo" />
+					</a>
+				</div>
+				<!-- Rounded Navigation Container -->
+				<div class="hidden md:flex bg-[#496a51] backdrop-blur border border-white/10 rounded-full py-2.5 px-6">
+					<ul class="flex gap-8 list-none m-0">
+						<li>
+							<a href="./index.html"
+								class="text-white font-medium text-base hover:text-lime-200 transition">Home</a>
+						</li>
+						<li>
+							<a href="./about.html"
+								class="text-white font-medium text-base hover:text-lime-200 transition">Plans &
+								Pricing</a>
+						</li>
+						<li>
+							<a href="./download.html"
+								class="text-white font-medium text-base hover:text-lime-200 transition">Download</a>
+						</li>
+						<li>
+							<a href="./contact.html"
+								class="text-white font-medium text-base hover:text-lime-200 transition">Contact</a>
+						</li>
+					</ul>
+				</div>
+				<div class="hidden md:flex gap-3">
+					<a href="./login.html"
+						class="bg-white/20 backdrop-blur text-white px-6 py-2 rounded-full border border-white/30 font-medium transition hover:bg-white/30">Login</a>
+					<a href="./signup.html"
+						class="bg-white/20 text-white px-6 py-2 rounded-full font-medium shadow-lg transition hover:-translate-y-0.5">Signup</a>
+				</div>
+				<button
+					class="menu-toggle flex md:hidden items-center justify-center bg-white/10 rounded-full w-12 h-12 border-none cursor-pointer z-20"
+					aria-label="Open menu">
+					<img src="./public/merged.png" alt="Menu Icon" />
+				</button>
+				<div
+					class="mobile-menu flex-col absolute top-16 right-5 bg-[#1b4426] bg-opacity-95 rounded-xl shadow-lg p-6 gap-6 z-50 hidden md:hidden">
+					<a href="./index.html" class="text-white text-lg font-medium">Home</a>
+					<a href="./about.html" class="text-white text-lg font-medium">Plans & Pricing</a>
+					<a href="./download.html" class="text-white text-lg font-medium">Download</a>
+					<a href="./contact.html" class="text-white text-lg font-medium">Contact</a>
+					<a href="./login.html" class="bg-white/20 text-white px-6 py-2 rounded-full font-medium mt-2">Login</a>
+					<a href="./signup.html" class="bg-white/20 text-white px-6 py-2 rounded-full font-medium mt-2">Signup</a>
+				</div>
+			</nav>
+			<!-- Hero Content -->
+			<div class="relative z-10 py-20">
+				<div class="container flex justify-between items-center mx-auto">
+					<div class="text-start">
+						<h1 class="text-[128px] font-bold text-white mb-4">Ooops</h1>
+						<p class="text-lg text-white mb-6">The page you are looking for could not be found.</p>
+						<a href="./index.html"
+							style="background: linear-gradient(178deg, #0D743B -32.88%, #FCE166 151.27%);"
+							class="text-white px-6 py-3 rounded-full font-medium transition hover:bg-gray-100">Return Home</a>
+					</div>
+					<img src="./public/404.png" alt="404 Error Image" class="mb-8 object-contain" />
+
+				</div>
+			</div>
+		</div>
+		<!-- end .container -->
+	</section>
+
+
+	<script src="./js/mobile-menu.js"></script>
+	<script src="./js/faq.js"></script>
+	<script src="./js/testimonial.js"></script>
+</body>
+
+</html>

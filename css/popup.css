@@ -1,0 +1,36 @@
+.active.main-container {
+  filter: blur(5px) brightness(0.6);
+}
+
+.popup {
+  position: fixed;
+  top: 0%;
+  right: 10%;
+  border-radius: 10px;
+  transform: translate(-0%, -50%);
+  transition: all 0.5s;
+  opacity: 0;
+  visibility: hidden;
+}
+
+.active.popup {
+  opacity: 1;
+  visibility: visible;
+  top: 40%;
+}
+
+@media (min-width: 720px) {
+  .popup {
+    width: 50%;
+  }
+}
+@media (min-width: 980px) {
+  .popup {
+    width: 40%;
+  }
+}
+@media (min-width: 1200px) {
+  .popup {
+    width: 35%;
+  }
+}

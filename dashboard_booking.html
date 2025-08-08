@@ -1,0 +1,977 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MoneySeen - Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="./css/font.css" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet" />
+    <style>
+        .gradient-green {
+            background: linear-gradient(135deg, #1BB15F 0%, #0B6B37 100%);
+        }
+
+        .check-icon {
+            width: 16px;
+            height: 16px;
+            background-color: #1BB15F;
+            /* Green background */
+            border-radius: 100%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 8px;
+            flex-shrink: 0;
+        }
+
+        .check-icon::after {
+            content: '✓';
+            color: white;
+            /* White checkmark */
+            font-size: 10px;
+            font-weight: bold;
+        }
+
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 1px;
+            /* For the subtle lines between cells */
+            background-color: #e5e7eb;
+            /* Light gray for grid lines */
+            border-radius: 0.75rem;
+            /* rounded-xl */
+            overflow: hidden;
+            /* Ensures inner borders are contained */
+        }
+
+        .calendar-day {
+            background-color: white;
+            padding: 1rem;
+            min-height: 100px;
+            /* Ensure cells have some height */
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            font-size: 0.875rem;
+            /* text-sm */
+            color: #4b5563;
+            /* text-gray-700 */
+            position: relative;
+        }
+
+        .calendar-day.empty {
+            background-color: #f9fafb;
+            /* bg-gray-50 */
+        }
+
+        .calendar-day-number {
+            font-weight: 600;
+            /* font-semibold */
+            margin-bottom: 0.5rem;
+            color: #1f2937;
+            /* text-gray-900 */
+        }
+
+        .calendar-event {
+            font-size: 0.75rem;
+            /* text-xs */
+            line-height: 1rem;
+            /* leading-tight */
+            margin-top: 0.25rem;
+            padding: 0.125rem 0.25rem;
+            border-radius: 0.25rem;
+            cursor: pointer;
+        }
+
+        .calendar-event.adobe {
+            background-color: #fef2f2;
+            color: #ef4444;
+        }
+
+        /* bg-red-50, text-red-600 */
+        .calendar-event.netflix {
+            background-color: #fef2f2;
+            color: #ef4444;
+        }
+
+        .calendar-event.chatgpt {
+            background-color: #ecfdf5;
+            color: #10b981;
+        }
+
+        /* bg-green-50, text-green-600 */
+        .calendar-event.microsoft {
+            background-color: #eff6ff;
+            color: #3b82f6;
+        }
+
+        /* bg-blue-50, text-blue-600 */
+        .calendar-event.spotify {
+            background-color: #ecfdf5;
+            color: #10b981;
+        }
+
+        .calendar-event.youtube {
+            background-color: #fef2f2;
+            color: #ef4444;
+        }
+
+        .calendar-event.change {
+            background-color: #eff6ff;
+            color: #3b82f6;
+        }
+
+        /* Pop-up/Tooltip styles */
+        .event-popup {
+            position: absolute;
+            background-color: #EFEFEF;
+            border-radius: 0.75rem;
+            /* rounded-xl */
+            box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.1);
+            padding: 0.75rem;
+            z-index: 10;
+            width: 250px;
+            /* Adjust as needed */
+            top: 100%;
+            /* Position below the event */
+            left: 50%;
+            transform: translateX(-50%);
+            display: none;
+            /* Hidden by default */
+            animation: fadeIn 0.2s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateX(-50%) translateY(-10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateX(-50%) translateY(0);
+            }
+        }
+
+        .event-popup.show {
+            display: block;
+        }
+    </style>
+</head>
+
+<body class="bg-[#F5F5F5]">
+    <!-- Header -->
+    <header class="bg-white shadow-sm">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <!-- Logo -->
+                <div class="flex items-center">
+                    <img src="./public/logo_full-removebg-preview.png" alt="MoneySeen Logo" class="h-12 w-auto" />
+                </div>
+                <!-- Navigation -->
+                <nav
+                    class="hidden md:flex md:flex-row border border-[rgba(201, 197, 197, 0.68)] p-1 rounded-full items-center space-x-2">
+                    <a href="#" class="text-black hover:bg-white px-6 py-2 rounded-full text-sm font-medium">Home</a>
+                    <a href="#"
+                        class="text-black hover:bg-white px-6 py-2 rounded-full text-sm font-medium">Features</a>
+                    <a href="#" class="bg-[#0D6B37] text-white px-6 py-2 rounded-full text-sm font-medium">Plan &
+                        Pricing</a>
+                    <a href="#"
+                        class="text-black hover:bg-white px-6 py-2 rounded-full text-sm font-medium">Download</a>
+                    <a href="#" class="text-black hover:bg-white px-6 py-2 rounded-full text-sm font-medium">Contact</a>
+                </nav>
+                <!-- Right side icons and user avatar -->
+                <div class="flex items-center space-x-4">
+                    <button
+                        class="bg-white size-10 border rounded-full flex items-center justify-center hover:text-gray-900">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none">
+                            <path
+                                d="M9.16667 15.8333C12.8486 15.8333 15.8333 12.8486 15.8333 9.16667C15.8333 5.48477 12.8486 2.5 9.16667 2.5C5.48477 2.5 2.5 5.48477 2.5 9.16667C2.5 12.8486 5.48477 15.8333 9.16667 15.8333Z"
+                                stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                            <path d="M17.5 17.5L13.875 13.875" stroke="black" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round" />
+                        </svg>
+                    </button>
+                    <button
+                        class="bg-white size-10 border rounded-full flex items-center justify-center hover:text-gray-900">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                            <path fill-rule="evenodd" clip-rule="evenodd"
+                                d="M12.0002 2.25C8.32001 2.25 5.25022 5.06847 5.25022 8.64153V9.69723C5.25022 10.7247 4.9461 11.7291 4.37618 12.584C4.36613 12.599 4.35663 12.6145 4.3477 12.6302L3.96906 13.2984C3.47894 14.1633 3.31926 15.1751 3.51495 16.1479C3.52959 16.2207 3.55335 16.3222 3.59151 16.4448C4.05486 17.9332 5.50116 18.6986 6.69011 19.0567C7.04543 19.1637 7.42267 19.2581 7.81665 19.3398L7.86793 19.4217C8.96229 21.1684 10.4349 22.2 12.0508 22.2C13.6667 22.2 15.1393 21.1684 16.2336 19.4217L16.3004 19.3152C16.6543 19.2388 16.9941 19.1521 17.3159 19.055C18.5204 18.6916 19.9095 17.9122 20.3923 16.4556C20.4104 16.4008 20.4255 16.3522 20.437 16.315C20.45 16.2731 20.4556 16.2551 20.4596 16.2436C20.4702 16.2126 20.4788 16.1809 20.4853 16.1488C20.6824 15.175 20.5212 14.1628 20.0314 13.2984L19.6527 12.6302C19.6438 12.6145 19.6343 12.599 19.6243 12.584C19.0543 11.7291 18.7502 10.7247 18.7502 9.69723V8.64153C18.7502 5.06847 15.6804 2.25 12.0002 2.25ZM14.1888 19.6352C12.7973 19.7681 11.3186 19.7715 9.92262 19.6455C10.638 20.3892 11.3824 20.7 12.0508 20.7C12.7223 20.7 13.4704 20.3863 14.1888 19.6352ZM6.75022 8.64153C6.75022 5.98312 9.0595 3.75 12.0002 3.75C14.9409 3.75 17.2502 5.98312 17.2502 8.64153V9.69723C17.2502 11.0115 17.6365 12.2965 18.3607 13.3927L18.7263 14.0379C19.0312 14.576 19.136 15.204 19.0229 15.8111L19.0067 15.863L19.0041 15.8714C18.9928 15.9079 18.9815 15.9442 18.9684 15.9836C18.7159 16.7455 17.9157 17.3073 16.8826 17.6189C14.1506 18.4432 9.85676 18.4437 7.12262 17.6204C6.06682 17.3024 5.2572 16.749 5.02372 15.9989C5.00291 15.9321 4.99137 15.8813 4.98549 15.8521C4.8606 15.2313 4.9628 14.5873 5.2741 14.0379L5.63973 13.3927C6.36395 12.2965 6.75022 11.0115 6.75022 9.69723V8.64153Z"
+                                fill="black" />
+                            <path
+                                d="M20.3876 8.2512C20.8012 8.27461 21.1174 8.62884 21.094 9.04239C21.06 9.64315 21.0781 10.0599 21.1743 10.4179C21.2661 10.7597 21.4425 11.0956 21.8042 11.4999C22.0804 11.8086 22.054 12.2827 21.7453 12.5589C21.4366 12.8351 20.9625 12.8088 20.6863 12.5001C20.198 11.9544 19.889 11.4154 19.7256 10.8071C19.5666 10.2151 19.5597 9.60685 19.5964 8.95761C19.6198 8.54406 19.9741 8.22779 20.3876 8.2512Z"
+                                fill="black" />
+                            <path
+                                d="M4.40272 8.95761C4.37931 8.54406 4.02508 8.22779 3.61153 8.2512C3.19798 8.27461 2.88171 8.62884 2.90512 9.04239C2.93912 9.64315 2.92105 10.0599 2.82488 10.4179C2.73308 10.7597 2.5567 11.0956 2.19498 11.4999C1.91879 11.8086 1.94513 12.2827 2.25382 12.5589C2.56251 12.8351 3.03665 12.8088 3.31284 12.5001C3.80113 11.9544 4.11012 11.4154 4.27352 10.8071C4.43255 10.2151 4.43947 9.60685 4.40272 8.95761Z"
+                                fill="black" />
+                        </svg>
+                    </button>
+                    <div class="size-10 bg-gray-300 rounded-full overflow-hidden">
+                        <img src="./public/user.png" alt="User" class="w-full h-full object-cover" />
+                    </div>
+                    <!-- Mobile menu button -->
+                    <button class="md:hidden text-gray-600 size-10 flex items-center justify-center"
+                        onclick="toggleMobileMenu()">
+                        <i class="fas fa-bars text-xl"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <!-- Mobile Menu Overlay -->
+        <div id="mobile-menu"
+            class="hidden md:hidden fixed inset-0 bg-white z-50 flex flex-col items-center justify-center space-y-6">
+            <button class="absolute top-4 right-4 text-gray-600 text-2xl" onclick="toggleMobileMenu()">
+                <i class="fas fa-times"></i>
+            </button>
+            <a href="#" class="text-black text-lg font-medium py-2">Home</a>
+            <a href="#" class="text-black text-lg font-medium py-2">Features</a>
+            <a href="#" class="text-black text-lg font-medium py-2">Plan & Pricing</a>
+            <a href="#" class="text-black text-lg font-medium py-2">Download</a>
+            <a href="#" class="text-black text-lg font-medium py-2">Contact</a>
+        </div>
+    </header>
+    <div class="flex">
+        <!-- Sidebar -->
+        <aside class="w-16 lg:w-16 shadow-sm h-screen sticky top-0 transition-all duration-300" id="sidebar">
+            <div class="p-4">
+                <nav class="space-y-2">
+                    <a href="#"
+                        class="flex size-[56px] rounded-full justify-center items-center space-x-3 text-primary bg-[#0D6B37] text-white">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none">
+                            <path
+                                d="M13.4792 12.3566C13.6301 12.0462 13.5008 11.6722 13.1903 11.5213C12.8799 11.3704 12.5059 11.4997 12.355 11.8101C12.3046 11.9137 12.0517 12.256 11.6056 12.575C11.1747 12.883 10.6242 13.125 10.0004 13.125C8.69022 13.125 7.99143 12.3347 7.6082 11.7434C7.42046 11.4538 7.03345 11.3712 6.7438 11.5589C6.45414 11.7466 6.37152 12.1337 6.55926 12.4233C7.04023 13.1654 8.06984 14.375 10.0004 14.375C10.9536 14.375 11.7534 14.0059 12.3326 13.5918C12.8966 13.1885 13.3135 12.6975 13.4792 12.3566Z"
+                                fill="white" />
+                            <path fill-rule="evenodd" clip-rule="evenodd"
+                                d="M11.2561 2.15038L11.985 2.62786L18.6743 6.97591C18.9638 7.16403 19.0459 7.55115 18.8578 7.84056C18.6696 8.12997 18.2825 8.21209 17.9931 8.02397L17.2608 7.54796C17.2815 7.70262 17.2921 7.85957 17.2921 8.01795V15.0001C17.2921 16.9561 15.7064 18.5417 13.7504 18.5417H6.2504C4.29439 18.5417 2.70873 16.9561 2.70873 15.0001V8.01795C2.70873 7.85957 2.71932 7.70262 2.74001 7.54796L2.00768 8.02397C1.71827 8.21209 1.33116 8.12997 1.14304 7.84056C0.95492 7.55115 1.03704 7.16403 1.32645 6.97591L8.01575 2.62787L8.74474 2.15038C9.50733 1.65088 10.4935 1.65088 11.2561 2.15038ZM10.5681 3.19771L11.3019 3.67469L15.0061 6.10091C15.6525 6.52435 16.0421 7.24512 16.0421 8.01795V15.0001C16.0421 16.2657 15.0161 17.2917 13.7504 17.2917H6.2504C4.98475 17.2917 3.95873 16.2657 3.95873 15.0001V8.01795C3.95873 7.24512 4.34825 6.52435 4.99474 6.10091L8.69886 3.6747L9.4327 3.19771C9.77791 2.97332 10.2229 2.97332 10.5681 3.19771Z"
+                                fill="white" />
+                        </svg>
+                    </a>
+                    <a style="background: linear-gradient(0deg, rgba(255, 255, 255, 0.36) 0%, rgba(252, 253, 254, 0.36) 100%); backdrop-filter: blur(40px);"
+                        href="#"
+                        class="flex size-[56px] rounded-full justify-center items-center space-x-3 text-primary bg-white">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none">
+                            <path
+                                d="M8.75033 5.62504C8.40515 5.62504 8.12533 5.90486 8.12533 6.25004C8.12533 6.59522 8.40515 6.87504 8.75033 6.87504H11.2503C11.5955 6.87504 11.8753 6.59522 11.8753 6.25004C11.8753 5.90486 11.5955 5.62504 11.2503 5.62504H8.75033Z"
+                                fill="black" />
+                            <path fill-rule="evenodd" clip-rule="evenodd"
+                                d="M9.39439 1.87813C10.0468 1.56745 10.8075 1.58269 11.447 1.91925L17.7919 5.25868C18.5094 5.63632 18.9587 6.3804 18.9587 7.19122C18.9587 8.39734 17.9809 9.37509 16.7748 9.37509H16.4587V15.2382C16.9493 15.3391 17.3624 15.6884 17.5368 16.1727L17.9396 17.2917H18.3337C18.6788 17.2917 18.9587 17.5715 18.9587 17.9167C18.9587 18.2619 18.6788 18.5417 18.3337 18.5417H1.66699C1.32181 18.5417 1.04199 18.2619 1.04199 17.9167C1.04199 17.5715 1.32181 17.2917 1.66699 17.2917H2.06106L2.46389 16.1727C2.63826 15.6884 3.05131 15.3391 3.54199 15.2382V9.37509H3.19942C2.0079 9.37509 1.04199 8.40917 1.04199 7.21766C1.04199 6.38552 1.52056 5.62757 2.27187 5.26981L9.39439 1.87813ZM16.3607 16.5961L16.6111 17.2917H3.38959L3.64 16.5961C3.66975 16.5135 3.74816 16.4584 3.83601 16.4584H16.1646C16.2525 16.4584 16.3309 16.5135 16.3607 16.5961ZM7.29199 15.2084H4.79199V9.37509H7.29199V15.2084ZM8.54199 15.2084H11.4587V9.37509H8.54199V15.2084ZM12.7087 15.2084H15.2087V9.37509H12.7087V15.2084ZM16.7748 8.12509H15.8414L15.8337 8.12504L15.8259 8.12509H12.0914L12.0837 8.12504L12.0759 8.12509H7.92473L7.91699 8.12504L7.90926 8.12509H4.17473L4.16699 8.12504L4.15926 8.12509H3.19942C2.69826 8.12509 2.29199 7.71882 2.29199 7.21766C2.29199 6.86766 2.49328 6.54886 2.80929 6.39838L9.93181 3.0067C10.2284 2.86549 10.5742 2.87242 10.8648 3.02539L17.2097 6.36483C17.5166 6.52632 17.7087 6.8445 17.7087 7.19122C17.7087 7.70698 17.2906 8.12509 16.7748 8.12509Z"
+                                fill="black" />
+                        </svg>
+                    </a>
+                    <a style="background: linear-gradient(0deg, rgba(255, 255, 255, 0.36) 0%, rgba(252, 253, 254, 0.36) 100%); backdrop-filter: blur(40px);"
+                        href="#"
+                        class="flex size-[56px] rounded-full justify-center items-center space-x-3 text-primary bg-white">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="16" viewBox="0 0 18 16" fill="none">
+                            <path fill-rule="evenodd" clip-rule="evenodd"
+                                d="M7.69861 1.17448C7.2636 0.280787 6.21881 0.112533 5.46745 0.467425L1.88481 2.15962C1.87241 2.16547 1.8602 2.17174 1.84821 2.1784C0.55152 2.89878 0.55036 4.76323 1.84615 5.48523C1.85834 5.49202 1.87076 5.4984 1.88337 5.50436L5.47073 7.19921C6.21934 7.55289 7.26204 7.388 7.69836 6.49686C8.0107 5.85896 8.2014 5.16459 8.27142 4.45754H15.2502C15.5953 4.45754 15.8752 4.17772 15.8752 3.83254C15.8752 3.48736 15.5953 3.20754 15.2502 3.20754H8.27009C8.19885 2.50238 8.00804 1.8102 7.69861 1.17448ZM6.36986 1.55789C6.46763 1.58481 6.53508 1.64021 6.57468 1.72156C7.2094 3.02555 7.21223 4.64718 6.57571 5.94718C6.53631 6.02764 6.46939 6.08247 6.37207 6.10908C6.26827 6.13745 6.1341 6.13014 6.00469 6.069L2.43932 4.38454C2.01983 4.13645 2.0203 3.52709 2.44027 3.27968L6.00131 1.59769C6.13107 1.5364 6.26565 1.5292 6.36986 1.55789Z"
+                                fill="#090909" />
+                            <path fill-rule="evenodd" clip-rule="evenodd"
+                                d="M12.5296 8.80076C11.7782 8.44587 10.7335 8.61412 10.2984 9.50782C9.989 10.1435 9.79819 10.8357 9.72695 11.5409L2.75008 11.5417C2.40491 11.5417 2.12511 11.8216 2.12515 12.1668C2.12519 12.5119 2.40504 12.7917 2.75022 12.7917L9.72563 12.7909C9.79566 13.498 9.98636 14.1923 10.2987 14.8302C10.735 15.7213 11.7777 15.8862 12.5263 15.5325L16.1137 13.8377C16.1263 13.8317 16.1387 13.8254 16.1509 13.8186C17.4467 13.0966 17.4455 11.2321 16.1488 10.5117C16.1368 10.5051 16.1246 10.4988 16.1122 10.4929L12.5296 8.80076ZM11.4224 10.0549C11.462 9.97355 11.5294 9.91815 11.6272 9.89123C11.7314 9.86254 11.866 9.86973 11.9957 9.93102L15.5568 11.613C15.9767 11.8604 15.9772 12.4698 15.5577 12.7179L11.9924 14.4023C11.8629 14.4635 11.7288 14.4708 11.625 14.4424C11.5277 14.4158 11.4607 14.361 11.4213 14.2805C10.7848 12.9805 10.7877 11.3589 11.4224 10.0549Z"
+                                fill="#090909" />
+                            <path fill-rule="evenodd" clip-rule="evenodd"
+                                d="M1.875 4.58329C1.875 2.62728 3.46066 1.04163 5.41667 1.04163H14.5833C16.5393 1.04163 18.125 2.62728 18.125 4.58329V15.4166C18.125 17.3726 16.5393 18.9583 14.5833 18.9583H5.41667C3.46066 18.9583 1.875 17.3726 1.875 15.4166V4.58329ZM5.41667 2.29163C4.15101 2.29163 3.125 3.31764 3.125 4.58329V15.4166C3.125 16.6823 4.15101 17.7083 5.41667 17.7083H14.5833C15.849 17.7083 16.875 16.6823 16.875 15.4166V4.58329C16.875 3.31764 15.849 2.29163 14.5833 2.29163H5.41667Z"
+                                fill="#090909" />
+                        </svg>
+                    </a>
+                    <a style="background: linear-gradient(0deg, rgba(255, 255, 255, 0.36) 0%, rgba(252, 253, 254, 0.36) 100%); backdrop-filter: blur(40px);"
+                        href="#"
+                        class="flex size-[56px] rounded-full justify-center items-center space-x-3 text-primary bg-white">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none">
+                            <path
+                                d="M13.9583 5.83329C13.9583 5.48811 13.6785 5.20829 13.3333 5.20829H8.33333C7.98816 5.20829 7.70833 5.48811 7.70833 5.83329C7.70833 6.17847 7.98816 6.45829 8.33333 6.45829H13.3333C13.6785 6.45829 13.9583 6.17847 13.9583 5.83329Z"
+                                fill="black" />
+                            <path
+                                d="M13.3333 8.54163C13.6785 8.54163 13.9583 8.82145 13.9583 9.16663C13.9583 9.5118 13.6785 9.79163 13.3333 9.79163H11.25C10.9048 9.79163 10.625 9.5118 10.625 9.16663C10.625 8.82145 10.9048 8.54163 11.25 8.54163H13.3333Z"
+                                fill="black" />
+                            <path
+                                d="M8.16987 9.42363C8.24911 9.46321 8.32053 9.50348 8.3825 9.54221C8.67522 9.72516 8.7642 10.1108 8.58125 10.4035C8.39831 10.6962 8.01272 10.7852 7.72001 10.6022C7.58604 10.5185 7.34445 10.4122 7.10137 10.3828C6.86693 10.3545 6.70889 10.4026 6.59736 10.5142C6.50512 10.6064 6.47482 10.686 6.46394 10.7499C6.45169 10.8219 6.45918 10.9081 6.49029 11.0047C6.51809 11.091 6.62329 11.2111 6.92303 11.3614C6.93458 11.3663 6.94604 11.3717 6.95742 11.3773L7.63296 11.7151C7.97873 11.888 8.50529 12.2053 8.69949 12.8081C8.85817 13.3007 8.86208 13.9902 8.28652 14.5658C7.90795 14.9444 7.4498 15.0665 7.04049 15.0706L7.0301 15.1225C6.9624 15.461 6.63314 15.6805 6.29466 15.6128C5.95619 15.5451 5.73668 15.2159 5.80437 14.8774L5.8258 14.7703C5.74828 14.7314 5.67834 14.6919 5.6175 14.6539C5.32479 14.4709 5.2358 14.0853 5.41875 13.7926C5.60169 13.4999 5.98728 13.4109 6.27999 13.5939C6.41396 13.6776 6.65555 13.7839 6.89863 13.8133C7.13307 13.8416 7.29111 13.7934 7.40264 13.6819C7.49489 13.5897 7.52518 13.5101 7.53606 13.4461C7.54831 13.3742 7.54082 13.288 7.50971 13.1914C7.48191 13.1051 7.37671 12.985 7.07697 12.8347C7.06542 12.8297 7.05396 12.8244 7.04258 12.8187L6.36704 12.481C6.02127 12.3081 5.49471 11.9908 5.30051 11.388C5.14183 10.8954 5.13792 10.2058 5.71348 9.63027C6.09058 9.25317 6.54664 9.13057 6.95474 9.12554L6.97104 9.04405C7.03873 8.70558 7.368 8.48607 7.70647 8.55376C8.04495 8.62146 8.26446 8.95072 8.19676 9.2892L8.16987 9.42363Z"
+                                fill="black" />
+                            <path fill-rule="evenodd" clip-rule="evenodd"
+                                d="M1.875 4.58329C1.875 2.62728 3.46066 1.04163 5.41667 1.04163H14.5833C16.5393 1.04163 18.125 2.62728 18.125 4.58329V15.4166C18.125 17.3726 16.5393 18.9583 14.5833 18.9583H5.41667C3.46066 18.9583 1.875 17.3726 1.875 15.4166V4.58329ZM5.41667 2.29163C4.15101 2.29163 3.125 3.31764 3.125 4.58329V15.4166C3.125 16.6823 4.15101 17.7083 5.41667 17.7083H14.5833C15.849 17.7083 16.875 16.6823 16.875 15.4166V4.58329C16.875 3.31764 15.849 2.29163 14.5833 2.29163H5.41667Z"
+                                fill="black" />
+                        </svg>
+                    </a>
+                    <a style="background: linear-gradient(0deg, rgba(255, 255, 255, 0.36) 0%, rgba(252, 253, 254, 0.36) 100%); backdrop-filter: blur(40px);"
+                        href="#"
+                        class="flex size-[56px] rounded-full justify-center items-center space-x-3 text-primary bg-white">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none">
+                            <path fill-rule="evenodd" clip-rule="evenodd"
+                                d="M2.08301 6.82235C2.16972 5.07258 2.42915 3.98164 3.20521 3.20557C3.98127 2.42952 5.07222 2.17009 6.82198 2.08337M17.9163 6.82235C17.8296 5.07258 17.5702 3.98164 16.7942 3.20557C16.0181 2.42952 14.9271 2.17009 13.1773 2.08337M13.1773 17.9167C14.9271 17.83 16.0181 17.5705 16.7942 16.7945C17.5702 16.0185 17.8296 14.9275 17.9163 13.1777M6.82197 17.9167C5.07222 17.83 3.98127 17.5705 3.20521 16.7945C2.42915 16.0185 2.16972 14.9275 2.08301 13.1777"
+                                stroke="#0C0C0C" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round" />
+                            <path d="M2.08301 10H17.9164" stroke="#0C0C0C" stroke-width="1.25" stroke-linecap="round" />
+                            <path
+                                d="M5 10C5 7.23857 7.23857 5 10 5C10 6.38071 11.1192 7.5 12.5 7.5C13.0629 7.5 13.5824 7.31393 14.0003 6.99994C14.628 7.83561 15 8.87433 15 10M14.3311 12.5C13.4666 13.9945 11.8507 15 10 15C8.14929 15 6.53343 13.9945 5.66891 12.5"
+                                stroke="#0C0C0C" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round" />
+                        </svg>
+                    </a>
+                    <a style="background: linear-gradient(0deg, rgba(255, 255, 255, 0.36) 0%, rgba(252, 253, 254, 0.36) 100%); backdrop-filter: blur(40px);"
+                        href="#"
+                        class="flex size-[56px] rounded-full justify-center items-center space-x-3 text-primary bg-white">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none">
+                            <path fill-rule="evenodd" clip-rule="evenodd"
+                                d="M5.41634 1.45825C3.23021 1.45825 1.45801 3.23046 1.45801 5.41658C1.45801 7.60271 3.23021 9.37492 5.41634 9.37492C7.60247 9.37492 9.37467 7.60271 9.37467 5.41658C9.37467 3.23046 7.60247 1.45825 5.41634 1.45825ZM2.70801 5.41658C2.70801 3.92081 3.92057 2.70825 5.41634 2.70825C6.91211 2.70825 8.12467 3.92081 8.12467 5.41658C8.12467 6.91236 6.91211 8.12492 5.41634 8.12492C3.92057 8.12492 2.70801 6.91236 2.70801 5.41658Z"
+                                fill="black" />
+                            <path fill-rule="evenodd" clip-rule="evenodd"
+                                d="M5.41634 10.6249C3.23021 10.6249 1.45801 12.3971 1.45801 14.5833C1.45801 16.7694 3.23021 18.5416 5.41634 18.5416C7.60247 18.5416 9.37467 16.7694 9.37467 14.5833C9.37467 12.3971 7.60247 10.6249 5.41634 10.6249ZM2.70801 14.5833C2.70801 13.0875 3.92057 11.8749 5.41634 11.8749C6.91211 11.8749 8.12467 13.0875 8.12467 14.5833C8.12467 16.079 6.91211 17.2916 5.41634 17.2916C3.92057 17.2916 2.70801 16.079 2.70801 14.5833Z"
+                                fill="black" />
+                            <path fill-rule="evenodd" clip-rule="evenodd"
+                                d="M10.6247 5.41658C10.6247 3.23046 12.3969 1.45825 14.583 1.45825C16.7691 1.45825 18.5413 3.23046 18.5413 5.41658C18.5413 7.60271 16.7691 9.37492 14.583 9.37492C12.3969 9.37492 10.6247 7.60271 10.6247 5.41658ZM14.583 2.70825C13.0872 2.70825 11.8747 3.92081 11.8747 5.41658C11.8747 6.91236 13.0872 8.12492 14.583 8.12492C16.0788 8.12492 17.2913 6.91236 17.2913 5.41658C17.2913 3.92081 16.0788 2.70825 14.583 2.70825Z"
+                                fill="black" />
+                            <path fill-rule="evenodd" clip-rule="evenodd"
+                                d="M14.583 10.6249C12.3969 10.6249 10.6247 12.3971 10.6247 14.5833C10.6247 16.7694 12.3969 18.5416 14.583 18.5416C16.7691 18.5416 18.5413 16.7694 18.5413 14.5833C18.5413 12.3971 16.7691 10.6249 14.583 10.6249ZM11.8747 14.5833C11.8747 13.0875 13.0872 11.8749 14.583 11.8749C16.0788 11.8749 17.2913 13.0875 17.2913 14.5833C17.2913 16.079 16.0788 17.2916 14.583 17.2916C13.0872 17.2916 11.8747 16.079 11.8747 14.5833Z"
+                                fill="black" />
+                        </svg>
+                    </a>
+                    <a style="background: linear-gradient(0deg, rgba(255, 255, 255, 0.36) 0%, rgba(252, 253, 254, 0.36) 100%); backdrop-filter: blur(40px);"
+                        href="#"
+                        class="flex size-[56px] rounded-full justify-center items-center space-x-3 text-primary bg-white">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none">
+                            <path fill-rule="evenodd" clip-rule="evenodd"
+                                d="M5.41634 1.45825C3.23021 1.45825 1.45801 3.23046 1.45801 5.41658C1.45801 7.60271 3.23021 9.37492 5.41634 9.37492C7.60247 9.37492 9.37467 7.60271 9.37467 5.41658C9.37467 3.23046 7.60247 1.45825 5.41634 1.45825ZM2.70801 5.41658C2.70801 3.92081 3.92057 2.70825 5.41634 2.70825C6.91211 2.70825 8.12467 3.92081 8.12467 5.41658C8.12467 6.91236 6.91211 8.12492 5.41634 8.12492C3.92057 8.12492 2.70801 6.91236 2.70801 5.41658Z"
+                                fill="black" />
+                            <path fill-rule="evenodd" clip-rule="evenodd"
+                                d="M5.41634 10.6249C3.23021 10.6249 1.45801 12.3971 1.45801 14.5833C1.45801 16.7694 3.23021 18.5416 5.41634 18.5416C7.60247 18.5416 9.37467 16.7694 9.37467 14.5833C9.37467 12.3971 7.60247 10.6249 5.41634 10.6249ZM2.70801 14.5833C2.70801 13.0875 3.92057 11.8749 5.41634 11.8749C6.91211 11.8749 8.12467 13.0875 8.12467 14.5833C8.12467 16.079 6.91211 17.2916 5.41634 17.2916C3.92057 17.2916 2.70801 16.079 2.70801 14.5833Z"
+                                fill="black" />
+                            <path fill-rule="evenodd" clip-rule="evenodd"
+                                d="M10.6247 5.41658C10.6247 3.23046 12.3969 1.45825 14.583 1.45825C16.7691 1.45825 18.5413 3.23046 18.5413 5.41658C18.5413 7.60271 16.7691 9.37492 14.583 9.37492C12.3969 9.37492 10.6247 7.60271 10.6247 5.41658ZM14.583 2.70825C13.0872 2.70825 11.8747 3.92081 11.8747 5.41658C11.8747 6.91236 13.0872 8.12492 14.583 8.12492C16.0788 8.12492 17.2913 6.91236 17.2913 5.41658C17.2913 3.92081 16.0788 2.70825 14.583 2.70825Z"
+                                fill="black" />
+                            <path fill-rule="evenodd" clip-rule="evenodd"
+                                d="M14.583 10.6249C12.3969 10.6249 10.6247 12.3971 10.6247 14.5833C10.6247 16.7694 12.3969 18.5416 14.583 18.5416C16.7691 18.5416 18.5413 16.7694 18.5413 14.5833C18.5413 12.3971 16.7691 10.6249 14.583 10.6249ZM11.8747 14.5833C11.8747 13.0875 13.0872 11.8749 14.583 11.8749C16.0788 11.8749 17.2913 13.0875 17.2913 14.5833C17.2913 16.079 16.0788 17.2916 14.583 17.2916C13.0872 17.2916 11.8747 16.079 11.8747 14.5833Z"
+                                fill="black" />
+                        </svg>
+                    </a>
+                    <a style="background: linear-gradient(0deg, rgba(255, 255, 255, 0.36) 0%, rgba(252, 253, 254, 0.36) 100%); backdrop-filter: blur(40px);"
+                        href="#"
+                        class="flex size-[56px] rounded-full justify-center items-center space-x-3 text-primary bg-white">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none">
+                            <path fill-rule="evenodd" clip-rule="evenodd"
+                                d="M2.08301 6.82235C2.16972 5.07258 2.42915 3.98164 3.20521 3.20557C3.98127 2.42952 5.07222 2.17009 6.82198 2.08337M17.9163 6.82235C17.8296 5.07258 17.5702 3.98164 16.7942 3.20557C16.0181 2.42952 14.9271 2.17009 13.1773 2.08337M13.1773 17.9167C14.9271 17.83 16.0181 17.5705 16.7942 16.7945C17.5702 16.0185 17.8296 14.9275 17.9163 13.1777M6.82197 17.9167C5.07222 17.83 3.98127 17.5705 3.20521 16.7945C2.42915 16.0185 2.16972 14.9275 2.08301 13.1777"
+                                stroke="#0C0C0C" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round" />
+                            <path d="M2.08301 10H17.9164" stroke="#0C0C0C" stroke-width="1.25" stroke-linecap="round" />
+                            <path
+                                d="M5 10C5 7.23857 7.23857 5 10 5C10 6.38071 11.1192 7.5 12.5 7.5C13.0629 7.5 13.5824 7.31393 14.0003 6.99994C14.628 7.83561 15 8.87433 15 10M14.3311 12.5C13.4666 13.9945 11.8507 15 10 15C8.14929 15 6.53343 13.9945 5.66891 12.5"
+                                stroke="#0C0C0C" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round" />
+                        </svg>
+                    </a>
+                    <a style="background: linear-gradient(0deg, rgba(255, 255, 255, 0.36) 0%, rgba(252, 253, 254, 0.36) 100%); backdrop-filter: blur(40px);"
+                        href="#"
+                        class="flex size-[56px] rounded-full justify-center items-center space-x-3 text-primary bg-white">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none">
+                            <path fill-rule="evenodd" clip-rule="evenodd"
+                                d="M5.41634 1.45825C3.23021 1.45825 1.45801 3.23046 1.45801 5.41658C1.45801 7.60271 3.23021 9.37492 5.41634 9.37492C7.60247 9.37492 9.37467 7.60271 9.37467 5.41658C9.37467 3.23046 7.60247 1.45825 5.41634 1.45825ZM2.70801 5.41658C2.70801 3.92081 3.92057 2.70825 5.41634 2.70825C6.91211 2.70825 8.12467 3.92081 8.12467 5.41658C8.12467 6.91236 6.91211 8.12492 5.41634 8.12492C3.92057 8.12492 2.70801 6.91236 2.70801 5.41658Z"
+                                fill="black" />
+                            <path fill-rule="evenodd" clip-rule="evenodd"
+                                d="M5.41634 10.6249C3.23021 10.6249 1.45801 12.3971 1.45801 14.5833C1.45801 16.7694 3.23021 18.5416 5.41634 18.5416C7.60247 18.5416 9.37467 16.7694 9.37467 14.5833C9.37467 12.3971 7.60247 10.6249 5.41634 10.6249ZM2.70801 14.5833C2.70801 13.0875 3.92057 11.8749 5.41634 11.8749C6.91211 11.8749 8.12467 13.0875 8.12467 14.5833C8.12467 16.079 6.91211 17.2916 5.41634 17.2916C3.92057 17.2916 2.70801 16.079 2.70801 14.5833Z"
+                                fill="black" />
+                            <path fill-rule="evenodd" clip-rule="evenodd"
+                                d="M10.6247 5.41658C10.6247 3.23046 12.3969 1.45825 14.583 1.45825C16.7691 1.45825 18.5413 3.23046 18.5413 5.41658C18.5413 7.60271 16.7691 9.37492 14.583 9.37492C12.3969 9.37492 10.6247 7.60271 10.6247 5.41658ZM14.583 2.70825C13.0872 2.70825 11.8747 3.92081 11.8747 5.41658C11.8747 6.91236 13.0872 8.12492 14.583 8.12492C16.0788 8.12492 17.2913 6.91236 17.2913 5.41658C17.2913 3.92081 16.0788 2.70825 14.583 2.70825Z"
+                                fill="black" />
+                            <path fill-rule="evenodd" clip-rule="evenodd"
+                                d="M14.583 10.6249C12.3969 10.6249 10.6247 12.3971 10.6247 14.5833C10.6247 16.7694 12.3969 18.5416 14.583 18.5416C16.7691 18.5416 18.5413 16.7694 18.5413 14.5833C18.5413 12.3971 16.7691 10.6249 14.583 10.6249ZM11.8747 14.5833C11.8747 13.0875 13.0872 11.8749 14.583 11.8749C16.0788 11.8749 17.2913 13.0875 17.2913 14.5833C17.2913 16.079 16.0788 17.2916 14.583 17.2916C13.0872 17.2916 11.8747 16.079 11.8747 14.5833Z"
+                                fill="black" />
+                        </svg>
+                    </a>
+                </nav>
+            </div>
+        </aside>
+        <!-- Main Content -->
+        <main class="flex-1 p-4 lg:p-8">
+            <!-- Dashboard Header -->
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8">
+                <div>
+                    <h1 class="text-4xl font-medium text-[#010101]">Billing</h1>
+                    <p style="color: rgba(0, 0, 0, 0.6)" class="text-sm font-normal">
+                        See all your recurring bills and subscriptions at a glance.
+                    </p>
+                </div>
+            </div>
+            <!-- Calendar Section -->
+            <section class="bg-white rounded-2xl p-6 shadow-sm mb-8">
+                <div class="flex justify-between items-center mb-6">
+                    <div class="flex items-center space-x-2">
+                        <span id="current-month-year" class="text-xl font-semibold text-gray-900">Jul, 2025</span>
+                        <button id="prev-month" class="p-2 rounded-full hover:bg-gray-100">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-600" viewBox="0 0 20 20"
+                                fill="currentColor">
+                                <path fill-rule="evenodd"
+                                    d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z"
+                                    clip-rule="evenodd" />
+                            </svg>
+                        </button>
+                        <button id="next-month" class="p-2 rounded-full hover:bg-gray-100">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-600" viewBox="0 0 20 20"
+                                fill="currentColor">
+                                <path fill-rule="evenodd"
+                                    d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
+                                    clip-rule="evenodd" />
+                            </svg>
+                        </button>
+                    </div>
+                    <div class="relative">
+                        <select id="year-select"
+                            class="appearance-none bg-white border border-gray-300 rounded-full py-2 pl-4 pr-8 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-green-500">
+                            <option value="2024">2024</option>
+                            <option value="2025" selected>2025</option>
+                            <option value="2026">2026</option>
+                        </select>
+                        <div
+                            class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
+                            <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+                                <path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 6.757 7.586 5.343 9z" />
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+                <div class="calendar-grid">
+                    <div class="calendar-day bg-gray-100 text-gray-600 font-semibold text-center justify-center">MON
+                    </div>
+                    <div class="calendar-day bg-gray-100 text-gray-600 font-semibold text-center justify-center">TUE
+                    </div>
+                    <div class="calendar-day bg-gray-100 text-gray-600 font-semibold text-center justify-center">WED
+                    </div>
+                    <div class="calendar-day bg-gray-100 text-gray-600 font-semibold text-center justify-center">THUR
+                    </div>
+                    <div class="calendar-day bg-gray-100 text-gray-600 font-semibold text-center justify-center">FRI
+                    </div>
+                    <div class="calendar-day bg-gray-100 text-gray-600 font-semibold text-center justify-center">SAT
+                    </div>
+                    <div class="calendar-day bg-gray-100 text-gray-600 font-semibold text-center justify-center">SUN
+                    </div>
+                    <!-- Empty days for July 2025 (starts on a Wednesday) -->
+                    <div class="calendar-day empty"></div>
+                    <div class="calendar-day empty"></div>
+                    <!-- Days of the month -->
+                    <div class="calendar-day" data-day="1">
+                        <span class="calendar-day-number">1</span>
+                    </div>
+                    <div class="calendar-day" data-day="2">
+                        <span class="calendar-day-number">2</span>
+                    </div>
+                    <div class="calendar-day" data-day="3">
+                        <span class="calendar-day-number">3</span>
+                        <span class="calendar-event adobe" onclick="showPopup(event, 'popup-day-3')">Adobe</span>
+                        <span class="calendar-event netflix" onclick="showPopup(event, 'popup-day-3')">Netflix</span>
+                        <div class="event-popup" id="popup-day-3">
+                            <div class="bg-white rounded-lg p-3 shadow-md">
+                                <div class="flex justify-between items-center mb-2">
+                                    <h4 class="text-sm font-semibold text-gray-900">Subscriptions</h4>
+                                    <button class="text-gray-500 hover:text-gray-700 text-lg leading-none"
+                                        onclick="closePopup(event)">&times;</button>
+                                </div>
+                                <div class="space-y-2 mb-4">
+                                    <div class="flex items-center justify-between">
+                                        <div class="flex items-center">
+                                            <img src="./public/adobe.png" alt="Adobe" class="h-5 w-5 mr-2" />
+                                            <span class="text-sm text-gray-900">Adobe</span>
+                                        </div>
+                                        <span class="text-sm text-gray-600">Monthly</span>
+                                        <span class="text-sm font-medium text-gray-900">$50</span>
+                                    </div>
+                                    <div class="flex items-center justify-between">
+                                        <div class="flex items-center">
+                                            <img src="./public/netflix.png" alt="Netflix" class="h-5 w-5 mr-2" />
+                                            <span class="text-sm text-gray-900">Netflix</span>
+                                        </div>
+                                        <span class="text-sm text-gray-600">Monthly</span>
+                                        <span class="text-sm font-medium text-gray-900">$50</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="bg-white rounded-lg shadow-md p-2 mt-3">
+                                <h4 class="text-sm font-semibold text-gray-900 mb-2">Recent Transactions</h4>
+                                <div class="space-y-2">
+                                    <div class="flex justify-between items-center">
+                                        <span class="text-xs text-gray-600">3 Jul, 2025</span>
+                                        <span class="text-xs font-medium text-gray-900">$100</span>
+                                    </div>
+                                    <div class="flex justify-between items-center">
+                                        <span class="text-xs text-gray-600">3 Jun, 2025</span>
+                                        <span class="text-xs font-medium text-gray-900">$50</span>
+                                    </div>
+                                    <div class="flex justify-between items-center">
+                                        <span class="text-xs text-gray-600">3 Apr, 2025</span>
+                                        <span class="text-xs font-medium text-gray-900">$50</span>
+                                    </div>
+                                </div>
+                                <a href="#" class="text-xs text-green-600 font-medium mt-4 block text-center">View
+                                    more</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="calendar-day" data-day="4">
+                        <span class="calendar-day-number">4</span>
+                    </div>
+                    <div class="calendar-day" data-day="5">
+                        <span class="calendar-day-number">5</span>
+                    </div>
+                    <div class="calendar-day" data-day="6">
+                        <span class="calendar-day-number">6</span>
+                    </div>
+                    <div class="calendar-day" data-day="7">
+                        <span class="calendar-day-number">7</span>
+                    </div>
+                    <div class="calendar-day" data-day="8">
+                        <span class="calendar-day-number">8</span>
+                    </div>
+                    <div class="calendar-day" data-day="9">
+                        <span class="calendar-day-number">9</span>
+                        <div class="event-popup" id="popup-day-9">
+                            <div class="flex justify-between items-center mb-2">
+                                <h4 class="text-sm font-semibold text-gray-900">Subscriptions</h4>
+                                <button class="text-gray-500 hover:text-gray-700 text-lg leading-none"
+                                    onclick="closePopup(event)">&times;</button>
+                            </div>
+                            <div class="space-y-2 mb-4">
+                                <div class="flex items-center justify-between">
+                                    <div class="flex items-center">
+                                        <img src="./public/adobe.png" alt="Adobe" class="h-5 w-5 mr-2" />
+                                        <span class="text-sm text-gray-900">Adobe</span>
+                                    </div>
+                                    <span class="text-sm text-gray-600">Monthly</span>
+                                    <span class="text-sm font-medium text-gray-900">$50</span>
+                                </div>
+                                <div class="flex items-center justify-between">
+                                    <div class="flex items-center">
+                                        <img src="./public/netflix.png" alt="Netflix" class="h-5 w-5 mr-2" />
+                                        <span class="text-sm text-gray-900">Netflix</span>
+                                    </div>
+                                    <span class="text-sm text-gray-600">Monthly</span>
+                                    <span class="text-sm font-medium text-gray-900">$50</span>
+                                </div>
+                            </div>
+
+                            <div class="bg-white shadow-md rounded-lg p-2">
+                                <h4 class="text-sm font-semibold text-gray-900 mb-2">Recent Transactions</h4>
+                                <div class="space-y-2">
+                                    <div class="flex justify-between items-center">
+                                        <span class="text-xs text-gray-600">3 Jul, 2025</span>
+                                        <span class="text-xs font-medium text-gray-900">$100</span>
+                                    </div>
+                                    <div class="flex justify-between items-center">
+                                        <span class="text-xs text-gray-600">3 Jun, 2025</span>
+                                        <span class="text-xs font-medium text-gray-900">$50</span>
+                                    </div>
+                                    <div class="flex justify-between items-center">
+                                        <span class="text-xs text-gray-600">3 Apr, 2025</span>
+                                        <span class="text-xs font-medium text-gray-900">$50</span>
+                                    </div>
+                                </div>
+                                <a href="#" class="text-xs text-green-600 font-medium mt-4 block text-center">View
+                                    more</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="calendar-day" data-day="10">
+                        <span class="calendar-day-number">10</span>
+                    </div>
+                    <div class="calendar-day" data-day="11">
+                        <span class="calendar-day-number">11</span>
+                        <span class="calendar-event chatgpt" onclick="showPopup(event, 'popup-day-11')">Chatgpt</span>
+                        <div class="event-popup" id="popup-day-11">
+                            <div class="flex justify-between items-center mb-2">
+                                <h4 class="text-sm font-semibold text-gray-900">Subscriptions</h4>
+                                <button class="text-gray-500 hover:text-gray-700 text-lg leading-none"
+                                    onclick="closePopup(event)">&times;</button>
+                            </div>
+                            <div class="space-y-2 mb-4">
+                                <div class="flex items-center justify-between">
+                                    <div class="flex items-center">
+                                        <img src="./public/adobe.png" alt="Chatgpt" class="h-5 w-5 mr-2" />
+                                        <span class="text-sm text-gray-900">Chatgpt</span>
+                                    </div>
+                                    <span class="text-sm text-gray-600">Monthly</span>
+                                    <span class="text-sm font-medium text-gray-900">$40</span>
+                                </div>
+                            </div>
+                            <div class="bg-white shadow-md rounded-lg p-2">
+                                <h4 class="text-sm font-semibold text-gray-900 mb-2">Recent Transactions</h4>
+                                <div class="space-y-2">
+                                    <div class="flex justify-between items-center">
+                                        <span class="text-xs text-gray-600">11 Jul, 2025</span>
+                                        <span class="text-xs font-medium text-gray-900">$40</span>
+                                    </div>
+                                </div>
+                                <a href="#" class="text-xs text-green-600 font-medium mt-4 block text-center">View
+                                    more</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="calendar-day" data-day="12">
+                        <span class="calendar-day-number">12</span>
+                    </div>
+                    <div class="calendar-day" data-day="13">
+                        <span class="calendar-day-number">13</span>
+                    </div>
+                    <div class="calendar-day" data-day="14">
+                        <span class="calendar-day-number">14</span>
+                    </div>
+                    <div class="calendar-day" data-day="15">
+                        <span class="calendar-day-number">15</span>
+                    </div>
+                    <div class="calendar-day" data-day="16">
+                        <span class="calendar-day-number">16</span>
+                    </div>
+                    <div class="calendar-day" data-day="17">
+                        <span class="calendar-day-number">17</span>
+                    </div>
+                    <div class="calendar-day" data-day="18">
+                        <span class="calendar-day-number">18</span>
+                        <span class="calendar-event change" onclick="showPopup(event, 'popup-day-18')">Change</span>
+                        <div class="event-popup" id="popup-day-18">
+                            <div class="flex justify-between items-center mb-2">
+                                <h4 class="text-sm font-semibold text-gray-900">Subscriptions</h4>
+                                <button class="text-gray-500 hover:text-gray-700 text-lg leading-none"
+                                    onclick="closePopup(event)">&times;</button>
+                            </div>
+                            <div class="space-y-2 mb-4">
+                                <div class="flex items-center justify-between">
+                                    <div class="flex items-center">
+                                        <img src="./public/adobe.png" alt="Change" class="h-5 w-5 mr-2" />
+                                        <span class="text-sm text-gray-900">Change</span>
+                                    </div>
+                                    <span class="text-sm text-gray-600">Monthly</span>
+                                    <span class="text-sm font-medium text-gray-900">$20</span>
+                                </div>
+                            </div>
+                            <div class="bg-white shadow-md rounded-lg p-2">
+                                <h4 class="text-sm font-semibold text-gray-900 mb-2">Recent Transactions</h4>
+                                <div class="space-y-2">
+                                    <div class="flex justify-between items-center">
+                                        <span class="text-xs text-gray-600">18 Jul, 2025</span>
+                                        <span class="text-xs font-medium text-gray-900">$20</span>
+                                    </div>
+                                </div>
+                                <a href="#" class="text-xs text-green-600 font-medium mt-4 block text-center">View
+                                    more</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="calendar-day" data-day="19">
+                        <span class="calendar-day-number">19</span>
+                    </div>
+                    <div class="calendar-day" data-day="20">
+                        <span class="calendar-day-number">20</span>
+                    </div>
+                    <div class="calendar-day" data-day="21">
+                        <span class="calendar-day-number">21</span>
+                        <span class="calendar-event microsoft"
+                            onclick="showPopup(event, 'popup-day-21')">Microsoft</span>
+                        <div class="event-popup" id="popup-day-21">
+                            <div class="flex justify-between items-center mb-2">
+                                <h4 class="text-sm font-semibold text-gray-900">Subscriptions</h4>
+                                <button class="text-gray-500 hover:text-gray-700 text-lg leading-none"
+                                    onclick="closePopup(event)">&times;</button>
+                            </div>
+                            <div class="space-y-2 mb-4">
+                                <div class="flex items-center justify-between">
+                                    <div class="flex items-center">
+                                        <img src="./public/adobe.png" alt="Microsoft" class="h-5 w-5 mr-2" />
+                                        <span class="text-sm text-gray-900">Microsoft</span>
+                                    </div>
+                                    <span class="text-sm text-gray-600">Monthly</span>
+                                    <span class="text-sm font-medium text-gray-900">$100</span>
+                                </div>
+                            </div>
+
+                            <div class="bg-white shadow-md rounded-lg p-2">
+                                <h4 class="text-sm font-semibold text-gray-900 mb-2">Recent Transactions</h4>
+                                <div class="space-y-2">
+                                    <div class="flex justify-between items-center">
+                                        <span class="text-xs text-gray-600">21 Jul, 2025</span>
+                                        <span class="text-xs font-medium text-gray-900">$100</span>
+                                    </div>
+                                </div>
+                                <a href="#" class="text-xs text-green-600 font-medium mt-4 block text-center">View
+                                    more</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="calendar-day" data-day="22">
+                        <span class="calendar-day-number">22</span>
+                    </div>
+                    <div class="calendar-day" data-day="23">
+                        <span class="calendar-day-number">23</span>
+                    </div>
+                    <div class="calendar-day" data-day="24">
+                        <span class="calendar-day-number">24</span>
+                    </div>
+                    <div class="calendar-day" data-day="25">
+                        <span class="calendar-day-number">25</span>
+                    </div>
+                    <div class="calendar-day" data-day="26">
+                        <span class="calendar-day-number">26</span>
+                    </div>
+                    <div class="calendar-day" data-day="27">
+                        <span class="calendar-day-number">27</span>
+                    </div>
+                    <div class="calendar-day" data-day="28">
+                        <span class="calendar-day-number">28</span>
+                        <span class="calendar-event spotify" onclick="showPopup(event, 'popup-day-28')">Spotify</span>
+                        <div class="event-popup" id="popup-day-28">
+                            <div class="flex justify-between items-center mb-2">
+                                <h4 class="text-sm font-semibold text-gray-900">Subscriptions</h4>
+                                <button class="text-gray-500 hover:text-gray-700 text-lg leading-none"
+                                    onclick="closePopup(event)">&times;</button>
+                            </div>
+                            <div class="space-y-2 mb-4">
+                                <div class="flex items-center justify-between">
+                                    <div class="flex items-center">
+                                        <img src="./public/adobe.png" alt="Spotify" class="h-5 w-5 mr-2" />
+                                        <span class="text-sm text-gray-900">Spotify</span>
+                                    </div>
+                                    <span class="text-sm text-gray-600">Monthly</span>
+                                    <span class="text-sm font-medium text-gray-900">$10</span>
+                                </div>
+                            </div>
+
+                            <div class="bg-white shadow-md rounded-lg p-2">
+                                <h4 class="text-sm font-semibold text-gray-900 mb-2">Recent Transactions</h4>
+                                <div class="space-y-2">
+                                    <div class="flex justify-between items-center">
+                                        <span class="text-xs text-gray-600">28 Jul, 2025</span>
+                                        <span class="text-xs font-medium text-gray-900">$10</span>
+                                    </div>
+                                </div>
+                                <a href="#" class="text-xs text-green-600 font-medium mt-4 block text-center">View
+                                    more</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="calendar-day" data-day="29">
+                        <span class="calendar-day-number">29</span>
+                    </div>
+                    <div class="calendar-day" data-day="30">
+                        <span class="calendar-day-number">30</span>
+                    </div>
+                    <div class="calendar-day" data-day="31">
+                        <span class="calendar-day-number">31</span>
+                        <span class="calendar-event youtube" onclick="showPopup(event, 'popup-day-31')">YouTube</span>
+                        <div class="event-popup" id="popup-day-31">
+                            <div class="flex justify-between items-center mb-2">
+                                <h4 class="text-sm font-semibold text-gray-900">Subscriptions</h4>
+                                <button class="text-gray-500 hover:text-gray-700 text-lg leading-none"
+                                    onclick="closePopup(event)">&times;</button>
+                            </div>
+                            <div class="space-y-2 mb-4">
+                                <div class="flex items-center justify-between">
+                                    <div class="flex items-center">
+                                        <img src="./public/adobe.png" alt="YouTube Premium" class="h-5 w-5 mr-2" />
+                                        <span class="text-sm text-gray-900">YouTube Premium</span>
+                                    </div>
+                                    <span class="text-sm text-gray-600">Monthly</span>
+                                    <span class="text-sm font-medium text-gray-900">$15</span>
+                                </div>
+                            </div>
+                            <div class="bg-white shadow-md rounded-lg">
+                                <h4 class="text-sm font-semibold text-gray-900 mb-2">Recent Transactions</h4>
+                                <div class="space-y-2">
+                                    <div class="flex justify-between items-center">
+                                        <span class="text-xs text-gray-600">31 Jul, 2025</span>
+                                        <span class="text-xs font-medium text-gray-900">$15</span>
+                                    </div>
+                                </div>
+                                <a href="#" class="text-xs text-green-600 font-medium mt-4 block text-center">View
+                                    more</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            <!-- This Month Section -->
+            <section class="bg-white rounded-2xl p-6 shadow-sm">
+                <h2 class="text-xl font-semibold text-gray-900 mb-6">This Month</h2>
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th scope="col"
+                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Merchant</th>
+                                <th scope="col"
+                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Due Date</th>
+                                <th scope="col"
+                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Category</th>
+                                <th scope="col"
+                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Account</th>
+                                <th scope="col"
+                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Budget Amount</th>
+                            </tr>
+                        </thead>
+                        <tbody class="bg-white divide-y divide-gray-200">
+                            <tr>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="flex items-center">
+                                        <img src="./public/user.png" alt="Adobe" class="h-6 w-6 mr-3" />
+                                        <span class="text-sm font-medium text-gray-900">Adobe</span>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">3rd</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Software</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Chase Credit</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">$50</td>
+                            </tr>
+                            <tr>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="flex items-center">
+                                        <img src="./public/user.png" alt="Netflix" class="h-6 w-6 mr-3" />
+                                        <span class="text-sm font-medium text-gray-900">Netflix</span>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">3rd</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Entertainment</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500"></td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">$50</td>
+                            </tr>
+                            <tr>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="flex items-center">
+                                        <img src="./public/user.png" alt="Chatgpt" class="h-6 w-6 mr-3" />
+                                        <span class="text-sm font-medium text-gray-900">Chatgpt</span>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">11th</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Software</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500"></td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">$40</td>
+                            </tr>
+                            <tr>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="flex items-center">
+                                        <img src="./public/user.png" alt="Microsoft" class="h-6 w-6 mr-3" />
+                                        <span class="text-sm font-medium text-gray-900">Microsoft</span>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">14th</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Software</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500"></td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">$100</td>
+                            </tr>
+                            <tr>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="flex items-center">
+                                        <img src="./public/user.png" alt="Spotify" class="h-6 w-6 mr-3" />
+                                        <span class="text-sm font-medium text-gray-900">Spotify</span>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">21st</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Music</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500"></td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">$10</td>
+                            </tr>
+                            <tr>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="flex items-center">
+                                        <img src="./public/user.png" alt="YouTube Premium" class="h-6 w-6 mr-3" />
+                                        <span class="text-sm font-medium text-gray-900">YouTube Premium</span>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">25th</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Entertainment</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500"></td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">$15</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </main>
+    </div>
+    <script>
+        function toggleMobileMenu() {
+            const mobileMenu = document.getElementById('mobile-menu');
+            mobileMenu.classList.toggle('hidden');
+        }
+
+        // Basic calendar navigation (for demonstration)
+        const currentMonthYear = document.getElementById('current-month-year');
+        const prevMonthBtn = document.getElementById('prev-month');
+        const nextMonthBtn = document.getElementById('next-month');
+        const yearSelect = document.getElementById('year-select');
+        let currentMonthIndex = 6; // July is the 7th month (0-indexed)
+        let currentYear = 2025;
+        const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
+        function updateCalendarHeader() {
+            currentMonthYear.textContent = `${monthNames[currentMonthIndex]}, ${currentYear}`;
+            yearSelect.value = currentYear;
+        }
+
+        prevMonthBtn.addEventListener('click', () => {
+            currentMonthIndex--;
+            if (currentMonthIndex < 0) {
+                currentMonthIndex = 11;
+                currentYear--;
+            }
+            updateCalendarHeader();
+        });
+
+        nextMonthBtn.addEventListener('click', () => {
+            currentMonthIndex++;
+            if (currentMonthIndex > 11) {
+                currentMonthIndex = 0;
+                currentYear++;
+            }
+            updateCalendarHeader();
+        });
+
+        yearSelect.addEventListener('change', (event) => {
+            currentYear = parseInt(event.target.value);
+            updateCalendarHeader();
+        });
+
+        // Initial update
+        updateCalendarHeader();
+
+        // Pop-up functionality
+        let activePopup = null;
+
+        function showPopup(event, popupId) {
+            event.stopPropagation(); // Prevent click from propagating to document body
+
+            // Close any currently open pop-up
+            if (activePopup && activePopup.id !== popupId) {
+                activePopup.classList.remove('show');
+            }
+
+            const popup = document.getElementById(popupId);
+            if (popup) {
+                popup.classList.toggle('show');
+                activePopup = popup.classList.contains('show') ? popup : null;
+            }
+        }
+
+        function closePopup(event) {
+            event.stopPropagation(); // Prevent click from propagating to document body
+            if (activePopup) {
+                activePopup.classList.remove('show');
+                activePopup = null;
+            }
+        }
+
+        // Close pop-up when clicking anywhere else on the document
+        document.addEventListener('click', (event) => {
+            if (activePopup && !activePopup.contains(event.target)) {
+                activePopup.classList.remove('show');
+                activePopup = null;
+            }
+        });
+
+        // Prevent pop-up from closing when clicking inside it
+        document.querySelectorAll('.event-popup').forEach(popup => {
+            popup.addEventListener('click', (event) => {
+                event.stopPropagation();
+            });
+        });
+    </script>
+</body>
+
+</html>

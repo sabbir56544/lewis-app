@@ -1,0 +1,36 @@
+.search_active.main-container {
+  filter: blur(5px) brightness(0.6);
+}
+
+.search_popup {
+  position: fixed;
+  top: 0%;
+  right: 10%;
+  border-radius: 10px;
+  transform: translate(-0%, -50%);
+  transition: all 0.5s;
+  opacity: 0;
+  visibility: hidden;
+}
+
+.search_active.search_popup {
+  opacity: 1;
+  visibility: visible;
+  top: 40%;
+}
+
+@media (min-width: 720px) {
+  .search_popup {
+    width: 50%;
+  }
+}
+@media (min-width: 980px) {
+  .search_popup {
+    width: 40%;
+  }
+}
+@media (min-width: 1200px) {
+  .search_popup {
+    width: 35%;
+  }
+}

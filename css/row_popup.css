@@ -1,0 +1,36 @@
+.row_active.main-container {
+  filter: blur(5px) brightness(0.6);
+}
+
+.row_popup {
+  position: fixed;
+  top: 0%;
+  left: 50%;
+  border-radius: 10px;
+  transform: translate(-50%, -50%);
+  transition: all 0.5s;
+  opacity: 0;
+  visibility: hidden;
+}
+
+.row_active.row_popup {
+  opacity: 1;
+  visibility: visible;
+  top: 40%;
+}
+
+@media (min-width: 720px) {
+  .row_popup {
+    width: 50%;
+  }
+}
+@media (min-width: 980px) {
+  .row_popup {
+    width: 40%;
+  }
+}
+@media (min-width: 1200px) {
+  .row_popup {
+    width: 35%;
+  }
+}

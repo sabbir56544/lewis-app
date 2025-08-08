@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MoneyClean - Financial Management</title>
+  <link rel="stylesheet" href="./css/testimonials.css" />
+  <link rel="stylesheet" href="./css/base.css" />
+  <link rel="stylesheet" href="./css/font.css" />
+  <!-- Remove all custom CSS links, keep only Tailwind CDN and Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css"
+    integrity="sha512-papm6p6QwQwQwQwQwQwQwQwQwQwQwQwQwQwQwQwQwQwQwQwQwQwQwQwQwQwQwQwQwQwQwQwQwQwQwQwQwQw=="
+    crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+  <style>
+    .gradient-green {
+      background: linear-gradient(135deg, #1BB15F 0%, #0B6B37 100%);
+    }
+
+    .check-icon {
+      width: 16px;
+      height: 16px;
+      border: #666666;
+      border-radius: 100%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      margin-right: 8px;
+      flex-shrink: 0;
+    }
+
+    .check-icon::after {
+      content: '✓';
+      color: #666666;
+      font-size: 10px;
+      font-weight: bold;
+    }
+  </style>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+</head>
+
+<body class="bg-white">
+  <!-- Hero/Banner Section -->
+  <section class="relative overflow-hidden bg-[url('./public/banner.png')] bg-cover bg-center">
+    <div class="container mx-auto px-5">
+      <!-- Navbar -->
+      <nav class="flex justify-between items-center py-6 relative z-10">
+        <div>
+          <a href="./index.html" class="cursor-pointer">
+            <img src="./public/logo.svg" alt="MoneyClean Logo" />
+          </a>
+        </div>
+        <!-- Rounded Navigation Container -->
+        <div class="hidden md:flex bg-[#496a51] backdrop-blur border border-white/10 rounded-full py-2.5 px-6">
+          <ul class="flex gap-8 list-none m-0">
+            <li>
+              <a href="./index.html" class="text-white font-medium text-base hover:text-lime-200 transition">Home</a>
+            </li>
+            <li>
+              <a href="./about.html" class="text-white font-medium text-base hover:text-lime-200 transition">Plans &
+                Pricing</a>
+            </li>
+            <li>
+              <a href="./download.html" class="text-white font-medium text-base hover:text-lime-200 transition">Download</a>
+            </li>
+            <li>
+              <a href="./contact.html" class="text-white font-medium text-base hover:text-lime-200 transition">Contact</a>
+            </li>
+          </ul>
+        </div>
+        <div class="hidden md:flex gap-3">
+          <a href="./login.html"
+            class="bg-white/20 backdrop-blur text-white px-6 py-2 rounded-full border border-white/30 font-medium transition hover:bg-white/30">Login</a>
+          <a href="./signup.html"
+            class="bg-white/20 text-white px-6 py-2 rounded-full font-medium shadow-lg transition hover:-translate-y-0.5">Signup</a>
+        </div>
+        <button
+          class="menu-toggle flex md:hidden items-center justify-center bg-white/10 rounded-full w-12 h-12 border-none cursor-pointer z-20"
+          aria-label="Open menu">
+          <img src="./public/merged.png" alt="Menu Icon" />
+        </button>
+        <div
+          class="mobile-menu flex-col absolute top-16 right-5 bg-[#1b4426] bg-opacity-95 rounded-xl shadow-lg p-6 gap-6 z-50 hidden md:hidden">
+          <a href="./index.html" class="text-white text-lg font-medium">Home</a>
+          <a href="./about.html" class="text-white text-lg font-medium">Plans & Pricing</a>
+          <a href="./download.html" class="text-white text-lg font-medium">Download</a>
+          <a href="./contact.html" class="text-white text-lg font-medium">Contact</a>
+          <a href="./login.html" class="bg-white/20 text-white px-6 py-2 rounded-full font-medium mt-2">Login</a>
+          <a href="./signup.html" class="bg-white/20 text-white px-6 py-2 rounded-full font-medium mt-2">Signup</a>
+        </div>
+      </nav>
+      <!-- Hero Content -->
+      <div class="text-start pt-16 px-8 text-white relative z-10">
+        
+        <h1
+            class="lg:text-[72px] text-[36px] font-medium text-white text-white mb-6 leading-tight tracking-tight"
+          >
+             Take Control of Your,<br />Finances with Confidence
+          </h1>
+        <p class="text-xl text-start mb-10 opacity-90 max-w-2xl leading-relaxed font-normal">
+          Get real-time insights, smart budgeting tools, and seamless multi-account tracking—all in one dashboard.
+        </p>
+      </div>
+    </div>
+    <!-- end .container -->
+  </section>
+
+  <!-- Pricing Section (copied from index.html) -->
+  <section class="bg-white py-20" id="pricing">
+    <div class="container mx-auto px-4">
+      <div class="max-w-3xl mx-auto text-center mb-12">
+        <h2 class="text-4xl font-bold mb-4">Find Your Perfect Plan</h2>
+        <p class="text-gray-600 text-lg">Select the perfect plan with transparent pricing and no unexpected fees.</p>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-3 max-w-7xl mx-auto">
+        <!-- Standard Plan -->
+        <div
+          class="bg-white border border-gray-200 rounded-2xl p-8 flex flex-col shadow-sm hover:shadow-md transition-shadow">
+          <div class="flex justify-between items-start mb-6">
+            <span class="text-lg font-medium text-gray-700">Standard plan</span>
+            <span class="bg-green-100 text-green-600 text-xs font-medium px-3 py-1 rounded-full">Popular</span>
+          </div>
+          <div class="text-5xl font-bold text-gray-900 mb-6">$49</div>
+          <div class="text-gray-500 mb-8 text-sm leading-relaxed">
+            Ideal for individual users and small businesses.<br>
+            Use the theme on a single website.
+          </div>
+          <button
+            class="bg-white border border-gray-300 text-gray-600 px-6 py-3 rounded-full font-medium mb-8 hover:bg-gray-50 transition-colors">
+            Start Building
+          </button>
+          <div class="flex-1">
+            <div class="font-semibold mb-4 text-gray-800 text-sm tracking-wide">FEATURES</div>
+            <div class="text-gray-600 text-sm space-y-3">
+              <div class="flex items-start">
+                <span class="check-icon"></span>
+                <span>Use on a single site</span>
+              </div>
+              <div class="flex items-start">
+                <span class="check-icon"></span>
+                <span>All theme features</span>
+              </div>
+              <div class="flex items-start">
+                <span class="check-icon"></span>
+                <span>Get regular updates</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Multisite Plan -->
+        <div
+          class="bg-white border border-gray-200 rounded-2xl p-8 flex flex-col shadow-sm hover:shadow-md transition-shadow">
+          <div class="flex justify-between items-start mb-6">
+            <span class="text-lg font-medium text-gray-700">Multisite plan</span>
+          </div>
+          <div class="text-5xl font-bold text-gray-900 mb-6">$139</div>
+          <div class="text-gray-500 mb-8 text-sm leading-relaxed">
+            Utilize the theme across multiple websites within<br>
+            your organization or client projects.
+          </div>
+          <button
+            class="gradient-green text-white px-6 py-3 rounded-full font-medium mb-8 hover:opacity-90 transition-opacity">
+            Start Building
+          </button>
+          <div class="flex-1">
+            <div class="font-semibold mb-4 text-gray-800 text-sm tracking-wide">FEATURES</div>
+            <div class="text-gray-600 text-sm space-y-3">
+              <div class="flex items-start">
+                <span class="check-icon"></span>
+                <span>Everything in Standard plus...</span>
+              </div>
+              <div class="flex items-start">
+                <span class="check-icon"></span>
+                <span>Use on unlimited sites</span>
+              </div>
+              <div class="flex items-start">
+                <span class="check-icon"></span>
+                <span>All theme features</span>
+              </div>
+              <div class="flex items-start">
+                <span class="check-icon"></span>
+                <span>Get regular updates</span>
+              </div>
+              <div class="flex items-start">
+                <span class="check-icon"></span>
+                <span>Priority email support</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Extended Plan -->
+        <div
+          class="bg-white border border-gray-200 rounded-2xl p-8 flex flex-col shadow-sm hover:shadow-md transition-shadow">
+          <div class="flex justify-between items-start mb-6">
+            <span class="text-lg font-medium text-gray-700">Extended plan</span>
+          </div>
+          <div class="text-5xl font-bold text-gray-900 mb-6">$529</div>
+          <div class="text-gray-500 mb-8 text-sm leading-relaxed">
+            Use the theme in commercial projects and even<br>
+            integrate it into products for resale.
+          </div>
+          <button
+            class="bg-white border border-gray-300 text-gray-600 px-6 py-3 rounded-full font-medium mb-8 hover:bg-gray-50 transition-colors">
+            Start Building
+          </button>
+          <div class="flex-1">
+            <div class="font-semibold mb-4 text-gray-800 text-sm tracking-wide">FEATURES</div>
+            <div class="text-gray-600 text-sm space-y-3">
+              <div class="flex items-start">
+                <span class="check-icon"></span>
+                <span>Everything in Multisite plus...</span>
+              </div>
+              <div class="flex items-start">
+                <span class="check-icon"></span>
+                <span>Use on unlimited sites</span>
+              </div>
+              <div class="flex items-start">
+                <span class="check-icon"></span>
+                <span>All theme features</span>
+              </div>
+              <div class="flex items-start">
+                <span class="check-icon"></span>
+                <span>Get regular updates</span>
+              </div>
+              <div class="flex items-start">
+                <span class="check-icon"></span>
+                <span>Priority email support</span>
+              </div>
+              <div class="flex items-start">
+                <span class="check-icon"></span>
+                <span>Commercial use and resale</span>
+              </div>
+              <div class="flex items-start">
+                <span class="check-icon"></span>
+                <span>Developer-friendly license</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ Section (copied from index.html) -->
+  <section class="bg-white py-20">
+    <div class="max-w-7xl mx-auto px-6 md:px-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-10 md:gap-24 items-start">
+        <div class="mb-10 md:mb-0">
+          <h2 class="text-3xl font-bold text-gray-800 mb-6">
+            Your Financial Flow, Month to Month
+          </h2>
+          <p class="text-gray-600 text-base">
+            Visualize how your income compares to your expenses with intuitive
+            charts. No surprises — just financial clarity.
+          </p>
+        </div>
+        <div>
+          <div class="flex flex-col border p-3 divide-y divide-gray-200">
+            <!-- FAQ Item -->
+            <div class="faq-item py-6">
+              <button
+                class="w-full text-left text-lg font-medium text-gray-800 flex justify-between items-center focus:outline-none"
+                onclick="toggleFaq(this)">
+                How often is my financial data updated?
+                <svg class="w-5 h-5 ml-4 text-gray-400 transition-transform duration-300" viewBox="0 0 24 24"
+                  fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="6 9 12 15 18 9"></polyline>
+                </svg>
+              </button>
+              <div class="faq-answer max-h-0 overflow-hidden transition-all duration-300 text-gray-600 text-base">
+                <p>
+                  Your financial data is updated in real-time as transactions
+                  occur. Most bank connections sync automatically multiple
+                  times per day, ensuring you always have the most current
+                  view of your finances.
+                </p>
+              </div>
+            </div>
+            <div class="faq-item py-6">
+              <button
+                class="w-full text-left text-lg font-medium text-gray-800 flex justify-between items-center focus:outline-none"
+                onclick="toggleFaq(this)">
+                Does MoneySeen support international currencies?
+                <svg class="w-5 h-5 ml-4 text-gray-400 transition-transform duration-300" viewBox="0 0 24 24"
+                  fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="6 9 12 15 18 9"></polyline>
+                </svg>
+              </button>
+              <div class="faq-answer max-h-0 overflow-hidden transition-all duration-300 text-gray-600 text-base">
+                <p>
+                  Yes! MoneySeen supports over 150 international currencies
+                  with real-time exchange rates. You can track accounts in
+                  multiple currencies and view consolidated reports in your
+                  preferred base currency.
+                </p>
+              </div>
+            </div>
+            <div class="faq-item py-6">
+              <button
+                class="w-full text-left text-lg font-medium text-gray-800 flex justify-between items-center focus:outline-none"
+                onclick="toggleFaq(this)">
+                Can I get bill reminders and alerts?
+                <svg class="w-5 h-5 ml-4 text-gray-400 transition-transform duration-300" viewBox="0 0 24 24"
+                  fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="6 9 12 15 18 9"></polyline>
+                </svg>
+              </button>
+              <div class="faq-answer max-h-0 overflow-hidden transition-all duration-300 text-gray-600 text-base">
+                <p>
+                  Absolutely! Set up custom alerts for upcoming bills, low
+                  balances, unusual spending, and budget limits. You'll
+                  receive notifications via email, SMS, or push notifications
+                  on your mobile device.
+                </p>
+              </div>
+            </div>
+            <div class="faq-item py-6">
+              <button
+                class="w-full text-left text-lg font-medium text-gray-800 flex justify-between items-center focus:outline-none"
+                onclick="toggleFaq(this)">
+                Is there a mobile app available?
+                <svg class="w-5 h-5 ml-4 text-gray-400 transition-transform duration-300" viewBox="0 0 24 24"
+                  fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="6 9 12 15 18 9"></polyline>
+                </svg>
+              </button>
+              <div class="faq-answer max-h-0 overflow-hidden transition-all duration-300 text-gray-600 text-base">
+                <p>
+                  Yes, MoneySeen is available on both iOS and Android devices.
+                  The mobile app includes all the features of the web version,
+                  optimized for on-the-go financial management.
+                </p>
+              </div>
+            </div>
+            <div class="faq-item py-6">
+              <button
+                class="w-full text-left text-lg font-medium text-gray-800 flex justify-between items-center focus:outline-none"
+                onclick="toggleFaq(this)">
+                Can I share my account with a partner or advisor?
+                <svg class="w-5 h-5 ml-4 text-gray-400 transition-transform duration-300" viewBox="0 0 24 24"
+                  fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="6 9 12 15 18 9"></polyline>
+                </svg>
+              </button>
+              <div class="faq-answer max-h-0 overflow-hidden transition-all duration-300 text-gray-600 text-base">
+                <p>
+                  Yes, you can securely share access with trusted partners,
+                  family members, or financial advisors. You control what
+                  information they can see and what actions they can perform
+                  on your account.
+                </p>
+              </div>
+            </div>
+            <div class="faq-item py-6">
+              <button
+                class="w-full text-left text-lg font-medium text-gray-800 flex justify-between items-center focus:outline-none"
+                onclick="toggleFaq(this)">
+                What happens if I miss a payment or bill?
+                <svg class="w-5 h-5 ml-4 text-gray-400 transition-transform duration-300" viewBox="0 0 24 24"
+                  fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="6 9 12 15 18 9"></polyline>
+                </svg>
+              </button>
+              <div class="faq-answer max-h-0 overflow-hidden transition-all duration-300 text-gray-600 text-base">
+                <p>
+                  MoneySeen will send you immediate alerts if a scheduled
+                  payment fails or if you miss a bill deadline. We also
+                  provide suggestions for next steps and can help you set up
+                  automatic payments to prevent future missed payments.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Banner Section (copied from index.html) -->
+  <div
+    class="bg-[url('./public/banner.png')] bg-cover bg-center rounded-[30px] text-white text-center px-6 py-20 max-w-6xl mx-auto pb-12 mb-16">
+    <h1 class="text-3xl md:text-5xl font-semibold mb-4">
+      Your Finances, Finally in Focus
+    </h1>
+    <p class="text-base md:text-lg mb-8">
+      Start tracking smarter today — it only takes a minute to get set up.
+    </p>
+    <button class="bg-white text-black px-6 py-2 rounded-full font-medium hover:bg-gray-100 transition">
+      Get Started — It’s Free →
+    </button>
+  </div>
+
+
+  <!-- Footer Section (copied from index.html) -->
+  <section class="relative min-h-[50vh] bg-cover bg-center bg-no-repeat"
+    style="background-image: url('./public/footer.png')">
+    <div class="absolute inset-0 bg-[url('./public/Footer.png')] w-full h-full"></div>
+    <div class="relative z-10 max-w-6xl mx-auto text-white py-16">
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-10 mb-10 items-start">
+        <div class="flex flex-col">
+          <div class="flex items-center gap-2 mb-4">
+            <img src="./public/logo.svg" alt="MoneySeen Logo" class="h-8" />
+          </div>
+          <p class="text-sm opacity-80 mb-5">
+            MoneySeen gives you more than Day-Day tracking, it's financial
+            clarity that follows.
+          </p>
+          <div class="flex gap-3 flex-wrap">
+            <img src="./public/apple.png" alt="Apple Store" class="h-8" />
+            <img src="./public/google.png" alt="Google Play" class="h-8" />
+          </div>
+        </div>
+        <div class="flex flex-col items-start">
+          <h3 class="text-base font-semibold mb-4">Product</h3>
+          <ul class="list-none">
+            <li class="mb-2">
+              <a href="#" class="text-white/80 hover:text-white text-sm">Mobile</a>
+            </li>
+            <li class="mb-2">
+              <a href="#" class="text-white/80 hover:text-white text-sm">Plus & Pricing</a>
+            </li>
+          </ul>
+        </div>
+        <div class="flex flex-col items-start">
+          <h3 class="text-base font-semibold mb-4">Resources</h3>
+          <ul class="list-none">
+            <li class="mb-2">
+              <a href="#" class="text-white/80 hover:text-white text-sm">Documentation</a>
+            </li>
+            <li class="mb-2">
+              <a href="#" class="text-white/80 hover:text-white text-sm">Papers</a>
+            </li>
+            <li class="mb-2">
+              <a href="#" class="text-white/80 hover:text-white text-sm">Blog</a>
+            </li>
+          </ul>
+        </div>
+        <div class="flex flex-col items-start">
+          <h3 class="text-base font-semibold mb-4">Social Media</h3>
+          <ul class="list-none">
+            <li class="mb-2">
+              <a href="#" class="text-white/80 hover:text-white text-sm">Twitter</a>
+            </li>
+            <li class="mb-2">
+              <a href="#" class="text-white/80 hover:text-white text-sm">LinkedIn</a>
+            </li>
+            <li class="mb-2">
+              <a href="#" class="text-white/80 hover:text-white text-sm">Discord</a>
+            </li>
+            <li class="mb-2">
+              <a href="#" class="text-white/80 hover:text-white text-sm">YouTube</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+      <div
+        class="flex flex-col md:flex-row justify-between items-center gap-6 border-t border-white/20 pt-6 text-sm opacity-80">
+        <div>© Copyright 2025</div>
+        <div class="flex gap-6">
+          <a href="#" class="text-white/80 hover:text-white">Privacy Policy</a>
+          <a href="#" class="text-white/80 hover:text-white">Terms & Conditions</a>
+        </div>
+      </div>
+    </div>
+  </section>
+  <script src="./js/mobile-menu.js"></script>
+  <script src="./js/faq.js"></script>
+  <script src="./js/testimonial.js"></script>
+</body>
+
+</html>
